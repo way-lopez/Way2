@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>WayLy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <section id="menu" class="screen active">
+      <div class="menu-ambient"></div>
+      <div class="panel menu-panel">
+        <div class="brand">
+          <div class="brand-rune">✦</div>
+          <div>
+            <h1>WayLy</h1>
+            <p class="muted">Sombras, magia, poder e estratégia</p>
+          </div>
+          <div class="brand-rune">✦</div>
+        </div>
+
+        <div class="menu-cta menu-stack">
+          <button id="continueBtn" class="btn primary hidden" onclick="continueGame()">Continuar</button>
+          <button id="newGameBtn" class="btn crystal" onclick="startNewGame()">Iniciar novo jogo</button>
+          <button class="btn" onclick="openOptions()">Opções</button>
+          <button class="btn" onclick="openDeck()">Cartas</button>
+          <button class="btn danger" onclick="exitGame()">Sair</button>
+        </div>
+        <div id="menuNotice" class="menu-notice hidden"></div>
+      </div>
+
+      <div class="panel menu-stats">
+        <div class="stat-row"><span>Cartas desbloqueadas</span><strong id="statUnlocked">0</strong></div>
+        <div class="stat-row"><span>Cartas ativas no deck</span><strong id="statDeckSize">0</strong></div>
+        <div class="stat-row"><span>Mão máxima</span><strong id="statMaxHand">5</strong></div>
+        <div class="stat-row"><span>Energia por turno</span><strong id="statEnergy">3</strong></div>
+        <div class="stat-row"><span>Nível</span><strong id="statLevel">1</strong></div>
+        <div class="stat-row"><span>Estado da jornada</span><strong id="statJourney">Nova run</strong></div>
+      </div>
+      <div id="debugBox" class="debug hidden"></div>
+    </section>
+
+    <section id="deck" class="screen">
+      <div class="panel page-head">
+        <h2>Cartas liberadas</h2>
+        <p class="muted">O deck é automático. Ao subir de nível, você escolhe 1 carta; a outra vai para o bot.</p>
+        <div class="stat-row"><span>Cartas no seu deck</span><strong id="deckCount">0</strong></div>
+        <div class="stat-row"><span>Nível atual</span><strong id="deckLevel">1</strong></div>
+      </div>
+      <div id="deckGrid" class="deck-grid"></div>
+      <button class="btn" onclick="goMenu()">Voltar</button>
+    </section>
+
+    <section id="event" class="screen">
+      <div class="panel reward-panel event-theme">
+        <div class="reward-halo"></div>
+        <h2 id="eventTitle">Evento</h2>
+        <p id="eventText" class="muted"></p>
+      </div>
+      <div id="eventChoices" class="choice-grid"></div>
+      <button id="eventSkipBtn" class="btn hidden" onclick="skipEvent()">Pular</button>
+    </section>
+
+    <section id="choice" class="screen">
+      <div class="panel reward-panel">
+        <div class="reward-halo"></div>
+        <h2>Escolha sua nova carta</h2>
+        <p class="muted">Escolha <strong>1</strong> carta. A outra será absorvida pelo deck inimigo.</p>
+        <div class="stat-row"><span>Nível atual</span><strong id="choiceLevel">1</strong></div>
+      </div>
+      <div id="choiceGrid" class="choice-grid dramatic"></div>
+    </section>
+
+    <section id="battle" class="screen">
+      <div class="battle-shell" id="battleScene">
+        <div class="battle-bg"></div>
+        <div id="battleFxLayer" class="fx-layer"></div>
+
+        <div class="enemy-zone panel enemy-panel" id="enemyPanel">
+          <div class="actor-row top-row">
+            <div class="portrait-frame enemy-frame theme-neutral" id="enemyPortraitFrame">
+              <div class="portrait-glow"></div>
+              <div class="portrait-art placeholder" id="enemyPortraitArt">
+                <div class="portrait-eyes">◉ ◉</div>
+                <div class="portrait-mouth" id="enemyPortraitMood">—</div>
+              </div>
+              <div class="portrait-label" id="enemyName">Inimigo</div>
+            </div>
+
+            <div class="actor-stats">
+              <div class="name-line">
+                <strong id="enemyTitleText">Inimigo</strong>
+                <span><span id="enemyHpText">40</span>/<span id="enemyMaxHpText">40</span></span>
+              </div>
+              <div class="hpbar magic enemy-bar">
+                <div class="bar-particles"></div>
+                <div id="enemyHpBar" class="bar-fill enemy"></div>
+              </div>
+              <div id="enemyEffects" class="chips"></div>
+            </div>
+          </div>
+
+          <div class="enemy-backs-wrap">
+            <div class="mini-label">Mão do inimigo</div>
+            <div id="enemyHandBacks" class="enemy-backs"></div>
+          </div>
+        </div>
+
+        <div class="battle-middle">
+          <div class="legacy-hidden">
+            <span id="turnText">Turno: Player</span>
+            <span id="playerEnergyText">3</span>
+            <span id="playerMaxEnergyText">3</span>
+            <span id="enemyEnergyText">3</span>
+            <span id="enemyMaxEnergyText">3</span>
+          </div>
+
+          <div class="log-panel panel">
+            <div class="log-title">Grimório de batalha</div>
+            <div id="battleLog" class="log pretty"></div>
+          </div>
+
+          <div class="legacy-hidden">
+            <span id="playerHandCount"></span>
+            <span id="enemyHandCount"></span>
+            <span id="playerDeckCount"></span>
+            <span id="enemyDeckCount"></span>
+          </div>
+        </div>
+
+        <div class="player-zone panel" id="playerPanel">
+          <div class="actor-row bottom-row">
+            <div class="actor-stats">
+              <div class="name-line">
+                <strong>Player</strong>
+                <span><span id="playerHpText">40</span>/<span id="playerMaxHpText">40</span></span>
+              </div>
+              <div class="hpbar magic player-bar">
+                <div class="bar-particles"></div>
+                <div id="playerHpBar" class="bar-fill player"></div>
+              </div>
+              <div id="playerEffects" class="chips"></div>
+            </div>
+
+            <div class="portrait-frame player-frame theme-player" id="playerPortraitFrame">
+              <div class="portrait-glow"></div>
+              <div class="portrait-art placeholder" id="playerPortraitArt">
+                <div class="portrait-eyes">◉ ◉</div>
+                <div class="portrait-mouth" id="playerPortraitMood">⌣</div>
+              </div>
+              <div class="portrait-label">Player</div>
+            </div>
+          </div>
+
+          <div class="hand-strip">
+            <div class="hand-head">
+              <h3>Sua mão</h3>
+              <div class="energy-orbs" id="energyOrbs"></div>
+            </div>
+            <div id="hand" class="hand-grid"></div>
+          </div>
+        </div>
+
+        <div class="btn-row battle-actions">
+          <button class="btn" onclick="endPlayerTurn()">Encerrar turno</button>
+          <button class="btn danger" onclick="returnToMenu()">Voltar</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" class="screen">
+      <div class="panel reward-panel">
+        <div class="reward-halo"></div>
+        <h2 id="resultTitle">Resultado</h2>
+        <p id="resultText" class="muted"></p>
+        <div id="resultStats"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="goMenu()">Voltar ao menu</button>
+        <button class="btn" onclick="openDeck()">Ver cartas</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="optionsModal" class="modal hidden">
+    <div class="panel modal-card">
+      <h2>Opções</h2>
+      <label class="range-row">Volume de música <input id="musicRange" type="range" min="0" max="100" value="60"></label>
+      <label class="range-row">Volume de efeitos <input id="sfxRange" type="range" min="0" max="100" value="70"></label>
+      <button class="btn primary" onclick="saveOptions()">Salvar opções</button>
+      <button class="btn danger" onclick="resetSave()">Resetar save</button>
+      <button class="btn" onclick="closeOptions()">Fechar</button>
+    </div>
+  </div>
+
+  <script src="cards.js"></script>
+  <script src="progression.js"></script>
+  <script src="enemies.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
