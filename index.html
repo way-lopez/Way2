@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WayLy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="menu">
+<h2>WayLy</h2>
+<button onclick="startBattle()">Jogar</button>
+</div>
+
+<div id="battle" style="display:none">
+<h3 id="enemyName"></h3>
+<div>HP Player: <span id="playerHP"></span></div>
+<div>HP Inimigo: <span id="enemyHP"></span></div>
+<div id="hand"></div>
+<button onclick="endTurn()">Encerrar turno</button>
+</div>
+
+<script src="cards.js"></script>
+<script src="progression.js"></script>
+<script src="enemies.js"></script>
+<script src="game.js"></script>
+
+</body>
+</html>
