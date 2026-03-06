@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WayLy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="menu" class="screen active">
+<h1 class="logo">WAYLY</h1>
+<p class="subtitle">Sombras, magia e estratégia</p>
+<button class="menu-btn" onclick="startBattle()">Jogar</button>
+</div>
+
+<div id="battle" class="screen">
+
+<div class="enemy-area">
+<div class="enemy-portrait" id="enemyPortrait"></div>
+
+<div class="hpbar enemy-bar">
+<div class="hpfill" id="enemyHPFill"></div>
+<span id="enemyHPText"></span>
+</div>
+
+<div class="enemy-cards">
+<div class="enemy-card-back"></div>
+<div class="enemy-card-back"></div>
+<div class="enemy-card-back"></div>
+<div class="enemy-card-back"></div>
+<div class="enemy-card-back"></div>
+</div>
+</div>
+
+<div class="battle-log" id="battleLog"></div>
+
+<div class="player-area">
+
+<div class="hpbar player-bar">
+<div class="hpfill" id="playerHPFill"></div>
+<span id="playerHPText"></span>
+</div>
+
+<div class="energy" id="energyText"></div>
+
+<div class="hand" id="hand"></div>
+
+</div>
+
+</div>
+
+<div id="choice" class="screen">
+<h2>Escolha uma nova carta</h2>
+<p>Escolha uma carta. A outra será adicionada ao deck inimigo.</p>
+
+<div class="choice-container">
+<div class="choice-card" id="choice1"></div>
+<div class="choice-card" id="choice2"></div>
+</div>
+</div>
+
+<script src="cards.js"></script>
+<script src="progression.js"></script>
+<script src="enemies.js"></script>
+<script src="game.js"></script>
+
+</body>
+</html>
