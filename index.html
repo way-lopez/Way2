@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>WayLy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <section id="menu" class="screen active">
+      <div class="panel hero">
+        <h1>WayLy</h1>
+        <p class="muted">Card game de progressão para celular.</p>
+        <button class="btn primary" onclick="startBattle()">Jogar</button>
+        <div class="btn-row">
+          <button class="btn" onclick="openDeck()">Cartas</button>
+          <button class="btn" onclick="openOptions()">Opções</button>
+        </div>
+        <button class="btn danger" onclick="exitGame()">Sair</button>
+      </div>
+
+      <div class="panel stats">
+        <div class="stat-row"><span>Cartas desbloqueadas</span><strong id="statUnlocked">0</strong></div>
+        <div class="stat-row"><span>Cartas ativas no deck</span><strong id="statDeckSize">0</strong></div>
+        <div class="stat-row"><span>Mão máxima</span><strong id="statMaxHand">5</strong></div>
+        <div class="stat-row"><span>Energia por turno</span><strong id="statEnergy">3</strong></div>
+        <div class="stat-row"><span>Nível</span><strong id="statLevel">1</strong></div>
+        <div class="stat-row"><span>Vitórias / Derrotas</span><strong><span id="statWins">0</span> / <span id="statLosses">0</span></strong></div>
+      </div>
+      <div id="debugBox" class="debug hidden"></div>
+    </section>
+
+    <section id="deck" class="screen">
+      <div class="panel">
+        <h2>Cartas liberadas</h2>
+        <p class="muted">O deck é automático. Ao subir de nível, você escolhe 1 carta; a outra vai para o bot.</p>
+        <div class="stat-row"><span>Cartas no seu deck</span><strong id="deckCount">0</strong></div>
+        <div class="stat-row"><span>Nível atual</span><strong id="deckLevel">1</strong></div>
+      </div>
+      <div id="deckGrid" class="card-grid"></div>
+      <button class="btn" onclick="goMenu()">Voltar</button>
+    </section>
+
+    <section id="event" class="screen">
+      <div class="panel">
+        <h2 id="eventTitle">Evento</h2>
+        <p id="eventText" class="muted"></p>
+      </div>
+      <div id="eventChoices" class="choice-grid"></div>
+      <button id="eventSkipBtn" class="btn hidden" onclick="skipEvent()">Pular</button>
+    </section>
+
+    <section id="choice" class="screen">
+      <div class="panel">
+        <h2>Escolha sua nova carta</h2>
+        <p class="muted">Escolha 1 carta. A outra vai para o bot.</p>
+        <div class="stat-row"><span>Nível atual</span><strong id="choiceLevel">1</strong></div>
+      </div>
+      <div id="choiceGrid" class="choice-grid"></div>
+    </section>
+
+    <section id="battle" class="screen">
+      <div class="panel battle-head">
+        <div class="turnbox">
+          <h2>Batalha</h2>
+          <p id="turnText" class="muted">Turno: Player</p>
+        </div>
+        <div class="turnbox">
+          <div class="energy-line">Energia Player <strong id="playerEnergyText">3</strong>/<span id="playerMaxEnergyText">3</span></div>
+          <div class="energy-line">Energia Bot <strong id="enemyEnergyText">3</strong>/<span id="enemyMaxEnergyText">3</span></div>
+        </div>
+      </div>
+
+      <div class="panel battle-side player-panel">
+        <div class="bar-label"><strong>Player</strong><span><span id="playerHpText">40</span>/<span id="playerMaxHpText">40</span></span></div>
+        <div class="bar"><div id="playerHpBar" class="bar-fill player"></div></div>
+        <div id="playerEffects" class="chips"></div>
+      </div>
+
+      <div class="panel battle-side enemy-panel">
+        <div class="bar-label"><strong id="enemyName">Inimigo</strong><span><span id="enemyHpText">40</span>/<span id="enemyMaxHpText">40</span></span></div>
+        <div class="bar"><div id="enemyHpBar" class="bar-fill enemy"></div></div>
+        <div id="enemyEffects" class="chips"></div>
+      </div>
+
+      <div class="panel compact">
+        <div class="stat-row"><span>Cartas na sua mão</span><strong id="playerHandCount">0</strong></div>
+        <div class="stat-row"><span>Cartas na mão do bot</span><strong id="enemyHandCount">0</strong></div>
+        <div class="stat-row"><span>Seu deck</span><strong id="playerDeckCount">0</strong></div>
+        <div class="stat-row"><span>Deck do bot</span><strong id="enemyDeckCount">0</strong></div>
+      </div>
+
+      <div class="panel">
+        <h3>Sua mão</h3>
+        <div id="hand" class="hand"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Log</h3>
+        <div id="battleLog" class="log"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="endPlayerTurn()">Encerrar turno</button>
+        <button class="btn danger" onclick="concedeBattle()">Desistir</button>
+      </div>
+    </section>
+
+    <section id="result" class="screen">
+      <div class="panel">
+        <h2 id="resultTitle">Resultado</h2>
+        <p id="resultText" class="muted"></p>
+        <div id="resultStats"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="goMenu()">Voltar ao menu</button>
+        <button class="btn" onclick="openDeck()">Ver cartas</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="optionsModal" class="modal hidden">
+    <div class="panel modal-card">
+      <h2>Opções</h2>
+      <label class="range-row">Volume de música <input id="musicRange" type="range" min="0" max="100" value="60"></label>
+      <label class="range-row">Volume de efeitos <input id="sfxRange" type="range" min="0" max="100" value="70"></label>
+      <button class="btn primary" onclick="saveOptions()">Salvar opções</button>
+      <button class="btn danger" onclick="resetSave()">Resetar save</button>
+      <button class="btn" onclick="closeOptions()">Fechar</button>
+    </div>
+  </div>
+
+  <script src="cards.js"></script>
+  <script src="progression.js"></script>
+  <script src="enemies.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
